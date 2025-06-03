@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Admin Panel - User Data</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>UID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Bio</th>
+                <th>Search Key</th>
+            </tr>
+        </thead>
+        <tbody id="user-table-body"></tbody>
+    </table>
+</body>
+<script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
+    import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js';
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBBB8O1nNb-pVyb7H1EYg_qBDrdcGS2LGw",
+        authDomain: "facetagram-f287f.firebaseapp.com",
+        databaseURL: "https://facetagram-f287f-default-rtdb.firebaseio.com",
+        projectId: "facetagram-f287f",
+        storageBucket: "facetagram-f287f.appspot.com",
+        messagingSenderId: "875458048043",
+        appId: "1:875458048043:web:dc82b9ce8682dc8c886b2e"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function loadUserData() {
+        try {
+            const usersRef = collection(db, 'Users');
+            const querySnapshot = await getDocs(usersRef);
+            const tableBody = document.getElementById("user-table-body");
+
+            if (querySnapshot.empty) {
+                console.log('No users found in the collection');
+                return;
+            }
+
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${doc.id}</td>
+                    <td>${data.Username || "N/A"}</td>
+                    <td>${data.Email || "N/A"}</td>
+                    <td>${data.Bio || "N/A"}</td>
+                    <td>${data.Search || "N/A"}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        } catch (error) {
+            console.error("Error loading user data:", error);
+            // Add visual feedback for the error
+            const tableBody = document.getElementById("user-table-body");
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="5" style="color: red; text-align: center;">
+                        Error loading data. Please check the console for details.
+                    </td>
+                </tr>
+            `;
+        }
+    }
+
+    // Call the function when the page loads
+    document.addEventListener('DOMContentLoaded', loadUserData);
+</script>
+
+</html>
