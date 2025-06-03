@@ -3,8 +3,8 @@ import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/fi
 
 function checkAuth() {
     onAuthStateChanged(auth, (user) => {
-        if (!user && !window.location.href.includes('http://localhost/facetagram_admin/login.html')) {
-            window.location.href = 'http://localhost/facetagram_admin/login.html';
+        if (!user && !window.location.href.includes('http://localhost/facetagram_admin/index.html')) {
+            window.location.href = 'http://localhost/facetagram_admin/index.html';
         }
     });
 }
@@ -84,7 +84,7 @@ function setupAdminProfileDropdown() {
         e.preventDefault();
         try {
             await auth.signOut();
-            window.location.href = 'http://localhost/facetagram_admin/login.html';
+            window.location.href = 'http://localhost/facetagram_admin/index.html';
         } catch (error) {
             console.error('Error signing out:', error);
             alert('Error signing out. Please try again.');

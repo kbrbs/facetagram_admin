@@ -16,14 +16,14 @@
         
         auth.onAuthStateChanged((user) => {
             if (!user) {
-                window.location.replace('../login.html');
+                window.location.replace('../index.html');
             }
         });
 
         // Prevent back/forward navigation when logged out
         window.addEventListener('popstate', () => {
             if (!auth.currentUser) {
-                window.location.replace('../login.html');
+                window.location.replace('../index.html');
             }
         });
     </script>
@@ -87,7 +87,7 @@
                         <i class="fas fa-user"></i>
                         <span>Profile</span>
                     </a>
-                    <a href="login.html" class="dropdown-item logout" id="logoutBtn">
+                    <a href="index.html" class="dropdown-item logout" id="logoutBtn">
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Logout</span>
                     </a>

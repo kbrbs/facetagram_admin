@@ -16,7 +16,7 @@ class RegisteredAccountsManager {
     constructor() {
         // Add this at the start of constructor
         checkAuth().catch(() => {
-            window.location.replace('../login.html');
+            window.location.replace('../index.html');
         });
         this.users = [];
         this.filteredUsers = [];
@@ -144,14 +144,14 @@ class RegisteredAccountsManager {
                 } else {
                     console.log('Not an admin user');
                     auth.signOut();
-                    if (window.location.pathname !== '/login.html') {
-                        window.location.href = '../login.html';
+                    if (window.location.pathname !== '/index.html') {
+                        window.location.href = '../index.html';
                     }
                 }
             } else {
                 console.log('User not authenticated');
-                if (window.location.pathname !== '/login.html') {
-                    window.location.href = '../login.html';
+                if (window.location.pathname !== '/index.html') {
+                    window.location.href = '../index.html';
                 }
             }
         });

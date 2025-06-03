@@ -18,7 +18,7 @@ class GalleryManager {
     constructor() {
         // Add this at the start of constructor
         checkAuth().catch(() => {
-            window.location.replace('../login.html');
+            window.location.replace('../index.html');
         });
 
         this.mediaItems = [];
