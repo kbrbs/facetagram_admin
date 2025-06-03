@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facetagram || Report Management</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Bubblegum+Sans&family=Great+Vibes&family=Kavoon&family=Lavishly+Yours&family=Luckiest+Guy&family=Montez&family=Niconne&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Report Management Specific Styles -->
+    <style>
+        /* Report Management Specific Styles */
+        .report-page-header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .report-page-title {
+            font-family: 'Alfa Slab One', cursive;
+            font-size: 36px;
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+
+        .report-page-subtitle {
+            font-size: 24px;
+            color: #4CAF50;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .report-controls {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .report-search-section {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .report-search-bar {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .report-search-bar input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .report-search-bar input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px #4CAF50;
+        }
+
+        .report-action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .report-action-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .report-action-btn.search {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .report-action-btn.unselect {
+            background: #6c757d;
+            color: white;
+        }
+
+        .report-action-btn.remove {
+            background: #f44336;
+            color: white;
+        }
+
+        .report-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .report-action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .report-filter-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .report-filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .report-filter-group label {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .report-filter-group select {
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .report-filter-group select:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .report-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .report-stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .report-stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .report-stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+
+        .report-stat-icon.total {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+        }
+
+        .report-stat-icon.pending {
+            background: linear-gradient(45deg, #ff9800, #f57c00);
+        }
+
+        .report-stat-icon.dismissed {
+            background: linear-gradient(45deg, #9e9e9e, #757575);
+        }
+
+        .report-stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .report-stat-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .report-reports-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .report-reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .report-card {
+            background: white;
+            border: 3px solid #4CAF50;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .report-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .report-card.selected {
+            border-color: #2196F3;
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
+        }
+
+        .report-card-header {
+            background: #4CAF50;
+            color: white;
+            padding: 15px 15px 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .report-type {
+            font-weight: 700;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .report-urgency {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .report-urgency.high {
+            color: white;
+            background: #f44336;
+        }
+
+        .report-urgency.medium {
+            background: #ff9800;
+        }
+
+        .report-urgency.low {
+            background: #cac700;
+        }
+
+        .report-menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .report-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .report-user-info {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .report-user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .report-user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .report-user-details h4 {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .report-user-details span {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .report-content {
+            position: relative;
+        }
+
+        .report-post-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .report-status-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(158, 158, 158, 0.9);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .report-post-actions {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .report-post-icons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .report-post-icons i {
+            font-size: 18px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .report-post-icons i:hover {
+            color: #4CAF50;
+        }
+
+        .report-post-caption {
+            padding: 15px 20px;
+            color: #333;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .report-checkbox {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            color: #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 50vw;
+            max-height: 90vh;
+            overflow: hidden;
+            transform: scale(0.9);
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h3 {
+            font-size: 20px;
+            color: #333;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #666;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .modal-body {
+            padding: 25px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn.primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn.secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn.danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .report-reports-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .report-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .report-filter-section {
+                grid-template-columns: 1fr;
+            }
+
+            .report-search-section {
+                flex-direction: column;
+            }
+
+            .report-action-buttons {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .report-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <!-- Add this before your other scripts -->
+    <script type="module">
+        import { auth } from '../js/firebase-config.js';
+
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.replace('../login.html');
+            }
+        });
+
+        // Prevent back/forward navigation when logged out
+        window.addEventListener('popstate', () => {
+            if (!auth.currentUser) {
+                window.location.replace('../login.html');
+            }
+        });
+    </script>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-text">Facetagram</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="../dashboard.html" class="nav-link" data-tooltip="Dashboard">
+                            <i class="fas fa-th-large"></i>
+                            <span class="nav-text">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="../user-management/index.html" class="nav-link" data-tooltip="User Management">
+                            <i class="fas fa-users"></i>
+                            <span class="nav-text">User Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="../post-gallery/index.html" class="nav-link" data-tooltip="Gallery">
+                            <i class="fas fa-images"></i>
+                            <span class="nav-text">Gallery Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item active">
+                        <a href="index.html" class="nav-link" data-tooltip="Reported Post">
+                            <i class="fas fa-file-alt"></i>
+                            <span class="nav-text">Report Management</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="admin-profile" id="adminProfile">
+                    <div class="admin-avatar">
+                        <img src="../images/default-avatar.png" alt="Admin" id="adminAvatar"
+                            onerror="this.src='../images/default-avatar.png'">
+                    </div>
+                    <div class="admin-info">
+                        <div class="admin-role">Admin</div>
+                        <div class="admin-name" id="adminName">Loading...</div>
+                    </div>
+                </div>
+                <div class="admin-dropdown" id="adminDropdown">
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                    <a href="login.html" class="dropdown-item logout" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="main-header">
+                <button class="mobile-toggle" id="mobileToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="header-title">
+                    <h1>Report</h1>
+                    <h2>MANAGEMENT</h2>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <!-- Page Header -->
+                <!-- <div class="report-page-header">
+                    <h1 class="report-page-title">Review</h1>
+                    <h2 class="report-page-subtitle">POST</h2>
+                </div> -->
+
+                <!-- Controls -->
+                <div class="report-controls">
+                    <div class="report-search-section">
+                        <div class="report-search-bar">
+                            <input type="text" id="reportSearchInput" placeholder="Search media files...">
+                        </div>
+                        <div class="report-action-buttons">
+                            <button class="report-action-btn search" id="reportSearchBtn">
+                                <i class="fas fa-search"></i>
+                                Search
+                            </button>
+                            <button class="report-action-btn unselect" id="reportUnselectBtn" disabled>
+                                <i class="fas fa-times"></i>
+                                Unselect
+                            </button>
+                            <button class="report-action-btn remove" id="reportRemoveBtn" disabled>
+                                <i class="fas fa-trash"></i>
+                                Remove Post
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="report-filter-section">
+                        <div class="report-filter-group">
+                            <label for="reportTypeFilter">Report Type:</label>
+                            <select id="reportTypeFilter">
+                                <option value="">All Types</option>
+                                <option value="Spam">Spam</option>
+                                <option value="Bullying">Bullying</option>
+                                <option value="Inappropriate Content">Inappropriate Content</option>
+                            </select>
+                        </div>
+
+                        <div class="report-filter-group">
+                            <label for="reportDateFilter">Date:</label>
+                            <select id="reportDateFilter">
+                                <option value="">All Dates</option>
+                                <option value="today">Today</option>
+                                <option value="week">This Week</option>
+                                <option value="month">This Month</option>
+                            </select>
+                        </div>
+
+                        <div class="report-filter-group">
+                            <label for="reportStatusFilter">Status:</label>
+                            <select id="reportStatusFilter">
+                                <option value="">All Status</option>
+                                <option value="pending">Pending</option>
+                                <option value="dismissed">Dismissed</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="report-stats">
+                    <div class="report-stat-card">
+                        <div class="report-stat-icon total">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="report-stat-info">
+                            <div class="report-stat-number" id="totalReports">0</div>
+                            <div class="report-stat-label">Total Reports</div>
+                        </div>
+                    </div>
+                    <div class="report-stat-card">
+                        <div class="report-stat-icon dismissed">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <div class="report-stat-info">
+                            <div class="report-stat-number" id="dismissedReports">0</div>
+                            <div class="report-stat-label">Dismissed</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reports Container -->
+                <div class="report-reports-container">
+                    <div class="report-reports-grid" id="reportReportsGrid">
+                        <!-- Reports will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Loading Spinner -->
+                <div class="loading-spinner" id="loadingSpinner">
+                    <div class="spinner"></div>
+                    <p>Loading reports...</p>
+                </div>
+
+                <!-- Error Message -->
+                <div class="error-message" id="errorMessage" style="display: none;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Error Loading Reports</h3>
+                    <p>Unable to connect to Firebase. Please check your configuration.</p>
+                    <button class="retry-btn" id="retryBtn">Retry</button>
+                </div>
+
+                <!-- Empty State -->
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <i class="fas fa-file-alt"></i>
+                    <h3>No Reports Found</h3>
+                    <p>No reports match your current filters.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Report Details Modal -->
+    <div class="modal-overlay" id="reportDetailsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Report Details</h3>
+                <button class="close-btn" id="reportCloseDetailsBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="reportDetailsBody">
+                <!-- Report details will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn secondary" id="reportDismissBtn">
+                    <i class="fas fa-times"></i>
+                    Dismiss
+                </button>
+                <button class="btn danger" id="reportRemovePostBtn">
+                    <i class="fas fa-trash"></i>
+                    Remove Post
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal-overlay" id="reportConfirmModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="reportConfirmTitle">Confirm Action</h3>
+            </div>
+            <div class="modal-body">
+                <p id="reportConfirmMessage">Are you sure you want to perform this action?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn secondary" id="reportCancelBtn">Cancel</button>
+                <button class="btn danger" id="reportConfirmActionBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+    <script type="module" src="../js/firebase-config.js"></script>
+    <script type="module" src="../js/script.js"></script>
+
+    <!-- Report Management JavaScript -->
+    <script type="module">
+        import { 
+            collection,
+            query,
+            orderBy,
+            where,
+            getDocs,
+            getDoc,
+            updateDoc,
+            deleteDoc,  // Add this import
+            doc,
+            Timestamp,
+            serverTimestamp 
+        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        import { db, auth } from '../js/firebase-config.js';
+
+        class ReportManager {
+            constructor() {
+                this.reports = [];
+                this.filteredReports = [];
+                this.selectedReports = new Set();
+                this.currentFilters = {
+                    search: '',
+                    type: '',
+                    date: '',
+                    status: ''
+                };
+                
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.loadReportsData();
+            }
+
+            setupEventListeners() {
+                // Helper function to safely add event listener
+                const addListener = (id, event, handler) => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.addEventListener(event, handler);
+                    } else {
+                        console.warn(`Element with id '${id}' not found`);
+                    }
+                };
+
+                // Search functionality
+                addListener('reportSearchBtn', 'click', () => this.handleSearch());
+                addListener('reportSearchInput', 'keypress', (e) => {
+                    if (e.key === 'Enter') this.handleSearch();
+                });
+
+                // Filter functionality
+                addListener('reportTypeFilter', 'change', () => this.applyFilters());
+                addListener('reportDateFilter', 'change', () => this.applyFilters());
+                addListener('reportStatusFilter', 'change', () => this.applyFilters());
+
+                // Action buttons
+                addListener('reportUnselectBtn', 'click', () => this.unselectAll());
+                addListener('reportRemoveBtn', 'click', () => this.handleBulkRemove());
+
+                // Modal functionality
+                addListener('reportCloseDetailsBtn', 'click', () => this.closeModal('reportDetailsModal'));
+                addListener('reportCancelBtn', 'click', () => this.closeModal('reportConfirmModal'));
+                addListener('reportConfirmActionBtn', 'click', () => this.handleConfirmAction());
+
+                // Report actions
+                addListener('reportDismissBtn', 'click', () => this.dismissReport());
+                addListener('reportRemovePostBtn', 'click', () => this.removePost());
+
+                // Retry functionality
+                addListener('retryBtn', 'click', () => this.loadReportsData());
+
+                // Close modals on overlay click
+                document.querySelectorAll('.modal-overlay').forEach(modal => {
+                    modal.addEventListener('click', (e) => {
+                        if (e.target === modal) {
+                            this.closeModal(modal.id);
+                        }
+                    });
+                });
+            }
+
+            async loadReportsData() {
+                try {
+                    this.showLoading();
+                    this.hideError();
+
+                    this.reports = [];
+
+                    // First load reported posts from Reports collection
+                    const reportsRef = collection(db, 'Reports');
+                    const q = query(reportsRef, orderBy('Timestamp', 'desc'));
+                    const reportsSnapshot = await getDocs(q);
+                    
+                    // Load user reports
+                    for (const reportDoc of reportsSnapshot.docs) {
+                        const reportData = reportDoc.data();
+                        
+                        // Skip reports marked as deleted
+                        if (reportData.status === 'deleted') continue;
+
+                        const report = {
+                            id: reportDoc.id,
+                            ...reportData,
+                            timestamp: reportData.Timestamp?.toDate() || new Date(),
+                            urgency: this.calculateUrgency(reportData.Reason),
+                            status: reportData.status || 'pending',
+                            isUserReport: true
+                        };
+
+                        if (reportData.PostOwner && reportData.PostID) {
+                            try {
+                                const userPostRef = doc(db, 'Users', reportData.PostOwner, 'PostImages', reportData.PostID);
+                                const postSnap = await getDoc(userPostRef);
+
+                                if (postSnap.exists()) {
+                                    const postData = postSnap.data();
+                                    report.postData = postData;
+                                    
+                                    // Update report status if post is flagged
+                                    if (postData.status === 'flagged') {
+                                        report.status = 'flagged';
+                                        report.flaggedBy = postData.flaggedBy;
+                                        report.flaggedDate = postData.flaggedDate;
+                                    }
+                                }
+
+                                // Get post owner details
+                                const userRef = doc(db, 'Users', reportData.PostOwner);
+                                const userSnap = await getDoc(userRef);
+                                if (userSnap.exists()) {
+                                    report.postOwnerData = userSnap.data();
+                                }
+
+                                // Get reporter details
+                                if (reportData.ReportedBy) {
+                                    const reporterRef = doc(db, 'Users', reportData.ReportedBy);
+                                    const reporterSnap = await getDoc(reporterRef);
+                                    if (reporterSnap.exists()) {
+                                        report.reporterData = reporterSnap.data();
+                                    }
+                                }
+                            } catch (error) {
+                                console.error('Error fetching post data:', error);
+                            }
+                        }
+
+                        this.reports.push(report);
+                    }
+
+                    // Now load admin-flagged posts from Users collection
+                    const usersRef = collection(db, 'Users');
+                    const usersSnapshot = await getDocs(usersRef);
+
+                    for (const userDoc of usersSnapshot.docs) {
+                        const postsRef = collection(db, 'Users', userDoc.id, 'PostImages');
+                        const flaggedPostsQuery = query(postsRef, where('status', '==', 'flagged'));
+                        const flaggedPostsSnapshot = await getDocs(flaggedPostsQuery);
+
+                        for (const postDoc of flaggedPostsSnapshot.docs) {
+                            const postData = postDoc.data();
+                            
+                            // Check if this post isn't already in reports
+                            const existingReport = this.reports.find(r => r.PostID === postDoc.id);
+                            if (!existingReport) {
+                                const adminFlaggedReport = {
+                                    id: `admin-flag-${postDoc.id}`,
+                                    PostID: postDoc.id,
+                                    PostOwner: userDoc.id,
+                                    Reason: 'Admin Flagged',
+                                    timestamp: postData.flaggedDate?.toDate() || new Date(),
+                                    status: 'flagged',
+                                    urgency: 'high',
+                                    postData: postData,
+                                    postOwnerData: userDoc.data(),
+                                    reporterData: {
+                                        Username: 'Admin',
+                                        Email: 'admin@facetagram.com'
+                                    },
+                                    flaggedBy: postData.flaggedBy,
+                                    flaggedDate: postData.flaggedDate,
+                                    isAdminFlagged: true
+                                };
+
+                                this.reports.push(adminFlaggedReport);
+                            }
+                        }
+                    }
+
+                    // Sort all reports by date
+                    this.reports.sort((a, b) => b.timestamp - a.timestamp);
+                    this.filteredReports = [...this.reports];
+                    this.updateStats();
+                    this.renderReports();
+                    this.hideLoading();
+
+                } catch (error) {
+                    console.error('Error loading reports data:', error);
+                    this.showError();
+                    this.hideLoading();
+                }
+            }
+
+            calculateUrgency(reason) {
+                const highUrgencyReasons = ['Calling for Violence', 'Hate Speech', 'Harassment'];
+                const mediumUrgencyReasons = ['Inappropriate Content', 'False Information'];
+
+                if (highUrgencyReasons.includes(reason)) return 'high';
+                if (mediumUrgencyReasons.includes(reason)) return 'medium';
+                return 'low';
+            }
+
+            updateStats() {
+                const totalReports = this.reports.length;
+                const dismissedReports = this.reports.filter(r => r.status === 'dismissed').length;
+
+                document.getElementById('totalReports').textContent = totalReports;
+                document.getElementById('dismissedReports').textContent = dismissedReports;
+            }
+
+            renderReports() {
+                const reportsGrid = document.getElementById('reportReportsGrid');
+
+                if (this.filteredReports.length === 0) {
+                    this.showEmptyState();
+                    reportsGrid.innerHTML = '';
+                    return;
+                }
+
+                this.hideEmptyState();
+
+                reportsGrid.innerHTML = this.filteredReports.map(report => `
+                    <div class="report-card ${this.selectedReports.has(report.id) ? 'selected' : ''}" data-id="${report.id}">
+                        <input type="checkbox" class="report-checkbox" ${this.selectedReports.has(report.id) ? 'checked' : ''}>
+                        
+                        <div class="report-card-header">
+                            <div class="report-type">
+                                ${report.isAdminFlagged ? 
+                                    '<span class="admin-flag-badge"><i class="fas fa-shield-alt"></i> Admin Flagged</span>' : 
+                                    report.Reason || 'Unknown'}
+                            </div>
+                            <div class="report-urgency ${report.urgency}">${report.urgency}</div>
+                            <button class="report-menu-btn" onclick="reportManager.openReportDetails('${report.id}')">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+
+                        <div class="report-user-info">
+                            <div class="report-user-avatar">
+                                <img src="${report.postOwnerData?.ProfileImage || '../images/default-avatar.png'}" 
+                                     alt="User" 
+                                     onerror="this.src='../images/default-avatar.png'">
+                            </div>
+                            <div class="report-user-details">
+                                <h4>${report.postOwnerData?.Username || 'Unknown User'}</h4>
+                                <span>${this.formatDate(report.timestamp)}</span>
+                            </div>
+                        </div>
+
+                        <div class="report-content" onclick="reportManager.openReportDetails('${report.id}')">
+                            ${report.postData?.ImageURL ? `
+                                <img src="${report.postData.ImageURL}" alt="Post" class="report-post-image">
+                                ${report.status === 'dismissed' ? '<div class="report-status-overlay"><i class="fas fa-times"></i></div>' : ''}
+                            ` : '<div class="report-post-image" style="background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #666;">No Image</div>'}
+                        </div>
+
+                        <div class="report-post-actions">
+                            <div class="report-post-icons">
+                                <i class="fas fa-heart"></i>
+                                <i class="fas fa-comment"></i>
+                                <i class="fas fa-share"></i>
+                            </div>
+                        </div>
+
+                        <div class="report-post-caption">
+                            ${report.postData?.Description || 'No caption available'}
+                        </div>
+                    </div>
+                `).join('');
+
+                // Add checkbox event listeners
+                document.querySelectorAll('.report-checkbox').forEach(checkbox => {
+                    checkbox.addEventListener('change', (e) => {
+                        const reportId = e.target.closest('.report-card').dataset.id;
+                        this.toggleSelection(reportId);
+                    });
+                });
+
+                this.updateActionButtons();
+            }
+
+            handleSearch() {
+                const searchTerm = document.getElementById('reportSearchInput').value.trim();
+                this.currentFilters.search = searchTerm;
+                this.applyFilters();
+            }
+
+            applyFilters() {
+                const searchTerm = this.currentFilters.search.toLowerCase();
+                const typeFilter = document.getElementById('reportTypeFilter').value;
+                const dateFilter = document.getElementById('reportDateFilter').value;
+                const statusFilter = document.getElementById('reportStatusFilter').value;
+
+                this.filteredReports = this.reports.filter(report => {
+                    // Search filter
+                    const matchesSearch = !searchTerm ||
+                        (report.postOwnerData?.Username || '').toLowerCase().includes(searchTerm) ||
+                        (report.Reason || '').toLowerCase().includes(searchTerm) ||
+                        (report.postData?.Description || '').toLowerCase().includes(searchTerm);
+
+                    // Type filter
+                    const matchesType = !typeFilter || report.Reason === typeFilter;
+
+                    // Status filter
+                    const matchesStatus = !statusFilter || report.status === statusFilter;
+
+                    // Date filter
+                    const matchesDate = !dateFilter || this.isWithinDateRange(report.timestamp, dateFilter);
+
+                    return matchesSearch && matchesType && matchesStatus && matchesDate;
+                });
+
+                this.renderReports();
+            }
+
+            isWithinDateRange(date, range) {
+                const now = new Date();
+                const reportDate = new Date(date);
+
+                switch (range) {
+                    case 'today':
+                        return reportDate.toDateString() === now.toDateString();
+                    case 'week':
+                        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                        return reportDate >= weekAgo;
+                    case 'month':
+                        const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                        return reportDate >= monthAgo;
+                    default:
+                        return true;
+                }
+            }
+
+            toggleSelection(reportId) {
+                if (this.selectedReports.has(reportId)) {
+                    this.selectedReports.delete(reportId);
+                } else {
+                    this.selectedReports.add(reportId);
+                }
+
+                // Update UI
+                const reportCard = document.querySelector(`[data-id="${reportId}"]`);
+                const checkbox = reportCard.querySelector('.report-checkbox');
+
+                if (this.selectedReports.has(reportId)) {
+                    reportCard.classList.add('selected');
+                    checkbox.checked = true;
+                } else {
+                    reportCard.classList.remove('selected');
+                    checkbox.checked = false;
+                }
+
+                this.updateActionButtons();
+            }
+
+            unselectAll() {
+                this.selectedReports.clear();
+                this.renderReports();
+            }
+
+            updateActionButtons() {
+                const hasSelection = this.selectedReports.size > 0;
+                document.getElementById('reportUnselectBtn').disabled = !hasSelection;
+                document.getElementById('reportRemoveBtn').disabled = !hasSelection;
+            }
+
+            openReportDetails(reportId) {
+                const report = this.reports.find(r => r.id === reportId);
+                if (!report) return;
+
+                const detailsBody = document.getElementById('reportDetailsBody');
+                detailsBody.innerHTML = `
+                    <div class="report-details">
+                        <section class="report-section">
+                            <h4 class="section-title">Report Information</h4>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <label>Report Type:</label>
+                                    <span>${report.Reason}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Reported Date:</label>
+                                    <span>${this.formatDate(report.timestamp)}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Urgency:</label>
+                                    <span class="report-urgency ${report.urgency}">${report.urgency}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Status:</label>
+                                    <span class="report-status ${report.status}">${report.status}</span>
+                                </div>
+                                ${report.resolvedAt ? `
+                                    <div class="info-item">
+                                        <label>Action Date:</label>
+                                        <span>${this.formatDate(report.resolvedAt.toDate())}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </section>
+
+                        <section class="report-section">
+                            <h4 class="section-title">Post Owner</h4>
+                            <div class="user-info">
+                                <div class="user-avatar">
+                                    <img src="${report.postOwnerData?.ProfileImage || '../images/default-avatar.png'}" 
+                                         alt="Post Owner"
+                                         onerror="this.src='../images/default-avatar.png'">
+                                </div>
+                                <div class="user-details">
+                                    <div class="info-item">
+                                        <label>Username:</label>
+                                        <span>${report.postOwnerData?.Username || 'Unknown'}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>Email:</label>
+                                        <span>${report.postOwnerData?.Email || 'Unknown'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="report-section">
+                            <h4 class="section-title">Reporter</h4>
+                            <div class="user-info">
+                                <div class="user-avatar">
+                                    <img src="${report.reporterData?.ProfileImage || '../images/default-avatar.png'}" 
+                                         alt="Reporter"
+                                         onerror="this.src='../images/default-avatar.png'">
+                                </div>
+                                <div class="user-details">
+                                    <div class="info-item">
+                                        <label>Username:</label>
+                                        <span>${report.reporterData?.Username || 'Unknown'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="report-section">
+                            <h4 class="section-title">Post Content</h4>
+                            ${report.postData?.ImageURL ? `
+                                <div class="post-image">
+                                    <img src="${report.postData.ImageURL}" alt="Reported Post">
+                                </div>
+                            ` : ''}
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <label>Caption:</label>
+                                    <span>${report.postData?.Description || 'No caption'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Posted:</label>
+                                    <span>${report.postData?.Timestamp ? this.formatDate(report.postData.Timestamp.toDate()) : 'Unknown'}</span>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                `;
+
+                // Add styles
+                const style = document.createElement('style');
+                style.textContent = `
+                    .report-details {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 24px;
+                    }
+
+                    .report-section {
+                        background: #f8f9fa;
+                        border-radius: 12px;
+                        padding: 20px;
+                    }
+
+                    .section-title {
+                        color: #333;
+                        font-size: 16px;
+                        font-weight: 600;
+                        margin-bottom: 16px;
+                        padding-bottom: 8px;
+                        border-bottom: 2px solid #e9ecef;
+                    }
+
+                    .info-grid {
+                        display: grid;
+                        gap: 12px;
+                    }
+
+                    .info-item {
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                    }
+
+                    .info-item label {
+                        color: #6c757d;
+                        font-weight: 500;
+                        min-width: 100px;
+                    }
+
+                    .info-item span {
+                        color: #333;
+                    }
+
+                    .user-info {
+                        display: flex;
+                        align-items: center;
+                        gap: 16px;
+                    }
+
+                    .user-avatar {
+                        width: 48px;
+                        height: 48px;
+                        border-radius: 50%;
+                        overflow: hidden;
+                        flex-shrink: 0;
+                    }
+
+                    .user-avatar img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                    }
+
+                    .user-details {
+                        flex: 1;
+                    }
+
+                    .post-image {
+                        margin-bottom: 16px;
+                        border-radius: 8px;
+                        overflow: hidden;
+                    }
+
+                    .post-image img {
+                        width: 100%;
+                        max-height: 300px;
+                        object-fit: cover;
+                    }
+
+                    .report-urgency,
+                    .report-status {
+                        padding: 4px 8px;
+                        border-radius: 12px;
+                        font-size: 12px;
+                        font-weight: 600;
+                        text-transform: uppercase;
+                    }
+                `;
+                document.head.appendChild(style);
+
+                // Update button visibility based on report status
+                const dismissBtn = document.getElementById('reportDismissBtn');
+                const removePostBtn = document.getElementById('reportRemovePostBtn');
+
+                if (report.status === 'dismissed') {
+                    // Hide all action buttons for dismissed reports
+                    dismissBtn.style.display = 'none';
+                    removePostBtn.style.display = 'none';
+                } else {
+                    // Show buttons for pending reports
+                    dismissBtn.style.display = 'block';
+                    removePostBtn.style.display = 'block';
+                }
+
+                this.currentReport = report;
+                this.openModal('reportDetailsModal');
+            }
+
+            async dismissReport() {
+                if (!this.currentReport) return;
+
+                try {
+                    if (this.currentReport.isAdminFlagged) {
+                        // For admin-flagged posts, update the post status in PostImages
+                        const postRef = doc(db, 'Users', this.currentReport.PostOwner, 'PostImages', this.currentReport.PostID);
+                        await updateDoc(postRef, {
+                            status: 'dismissed',
+                            dismissedAt: serverTimestamp(),
+                            dismissedBy: auth.currentUser?.uid,
+                            flaggedBy: null,
+                            flaggedDate: null
+                        });
+                    } else {
+                        // For user reports, update the report status
+                        const reportRef = doc(db, 'Reports', this.currentReport.id);
+                        await updateDoc(reportRef, {
+                            status: 'dismissed',
+                            resolvedAt: serverTimestamp(),
+                            resolvedBy: auth.currentUser?.uid
+                        });
+                    }
+
+                    // Update local state
+                    this.currentReport.status = 'dismissed';
+                    const index = this.reports.findIndex(r => r.id === this.currentReport.id);
+                    if (index > -1) {
+                        this.reports[index].status = 'dismissed';
+                    }
+
+                    this.renderReports();
+                    this.updateStats();
+                    this.closeModal('reportDetailsModal');
+                    alert('Report dismissed successfully.');
+                } catch (error) {
+                    console.error('Error dismissing report:', error);
+                    alert('Error dismissing report. Please try again.');
+                }
+            }
+
+            async removePost() {
+                if (!this.currentReport) return;
+
+                this.showConfirmModal(
+                    'Remove Post',
+                    'Are you sure you want to remove this post? This action cannot be undone.',
+                    async () => {
+                        try {
+                            // Delete the post document for both types
+                            const postRef = doc(db, 'Users', this.currentReport.PostOwner, 'PostImages', this.currentReport.PostID);
+                            await deleteDoc(postRef);
+
+                            if (!this.currentReport.isAdminFlagged) {
+                                // Update report status only for user reports
+                                const reportRef = doc(db, 'Reports', this.currentReport.id);
+                                await updateDoc(reportRef, {
+                                    status: 'deleted',
+                                    resolvedAt: serverTimestamp(),
+                                    resolvedBy: auth.currentUser?.uid,
+                                    action: 'post_deleted'
+                                });
+                            }
+
+                            // Remove from local array
+                            const index = this.reports.findIndex(r => r.id === this.currentReport.id);
+                            if (index > -1) {
+                                this.reports.splice(index, 1);
+                            }
+                            
+                            this.filteredReports = [...this.reports];
+                            this.renderReports();
+                            this.updateStats();
+                            this.closeModal('reportDetailsModal');
+                            this.closeModal('reportConfirmModal');
+                            alert('Post deleted successfully.');
+                        } catch (error) {
+                            console.error('Error deleting post:', error);
+                            alert('Error deleting post. Please try again.');
+                        }
+                    }
+                );
+            }
+
+            // Add the handleBulkRemove method to your ReportManager class
+handleBulkRemove() {
+    if (this.selectedReports.size === 0) return;
+
+    this.showConfirmModal(
+        'Remove Selected Posts',
+        `Are you sure you want to remove ${this.selectedReports.size} selected posts? This action cannot be undone.`,
+        () => this.performBulkRemove()
+    );
+}
+
+            // Update the performBulkRemove method
+            async performBulkRemove() {
+                try {
+                    for (const reportId of this.selectedReports) {
+                        const report = this.reports.find(r => r.id === reportId);
+                        if (!report) continue;
+
+                        // Delete the post document
+                        const postRef = doc(db, 'Users', report.PostOwner, 'PostImages', report.PostID);
+                        await deleteDoc(postRef);
+
+                        if (!report.isAdminFlagged) {
+                            // Update report status only for user reports
+                            const reportRef = doc(db, 'Reports', reportId);
+                            await updateDoc(reportRef, {
+                                status: 'deleted',
+                                resolvedAt: serverTimestamp(),
+                                resolvedBy: auth.currentUser?.uid,
+                                action: 'post_deleted'
+                            });
+                        }
+
+                        // Remove from local array
+                        const index = this.reports.findIndex(r => r.id === reportId);
+                        if (index > -1) {
+                            this.reports.splice(index, 1);
+                        }
+                    }
+
+                    // Update filtered reports and clear selection
+                    this.selectedReports.clear();
+                    this.filteredReports = [...this.reports];
+                    this.renderReports();
+                    this.updateStats();
+                    this.closeModal('reportConfirmModal');
+                    alert('Selected posts deleted successfully.');
+                } catch (error) {
+                    console.error('Error deleting posts:', error);
+                    alert('Error deleting some posts. Please try again.');
+                }
+            }
+
+            showConfirmModal(title, message, onConfirm) {
+                document.getElementById('reportConfirmTitle').textContent = title;
+                document.getElementById('reportConfirmMessage').textContent = message;
+                this.confirmAction = onConfirm;
+                this.openModal('reportConfirmModal');
+            }
+
+            handleConfirmAction() {
+                if (this.confirmAction) {
+                    this.confirmAction();
+                    this.confirmAction = null;
+                }
+            }
+
+            openModal(modalId) {
+                const modal = document.getElementById(modalId);
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            closeModal(modalId) {
+                const modal = document.getElementById(modalId);
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            showLoading() {
+                document.getElementById('loadingSpinner').style.display = 'flex';
+            }
+
+            hideLoading() {
+                document.getElementById('loadingSpinner').style.display = 'none';
+            }
+
+            showError() {
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+
+            hideError() {
+                document.getElementById('errorMessage').style.display = 'none';
+            }
+
+            showEmptyState() {
+                document.getElementById('emptyState').style.display = 'block';
+            }
+
+            hideEmptyState() {
+                document.getElementById('emptyState').style.display = 'none';
+            }
+
+            formatDate(date) {
+                if (!date) return 'Unknown';
+                return new Intl.DateTimeFormat('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }).format(date);
+            }
+        }
+
+        // Initialize the report manager when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.reportManager = new ReportManager();
+        });
+    </script>
+</body>
+
+</html>

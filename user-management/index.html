@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Bubblegum+Sans&family=Great+Vibes&family=Kavoon&family=Lavishly+Yours&family=Luckiest+Guy&family=Montez&family=Niconne&display=swap"
+        rel="stylesheet">
+    <title>Facetagram || User Management</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+        <!-- Add this before your other scripts -->
+    <script type="module">
+        import { auth } from '../js/firebase-config.js';
+        
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.replace('../login.html');
+            }
+        });
+
+        // Prevent back/forward navigation when logged out
+        window.addEventListener('popstate', () => {
+            if (!auth.currentUser) {
+                window.location.replace('../login.html');
+            }
+        });
+    </script>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-text">Facetagram</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="../dashboard.html" class="nav-link" data-tooltip="Dashboard">
+                            <i class="fas fa-th-large"></i>
+                            <span class="nav-text">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item active">
+                        <a href="index.html" class="nav-link" data-tooltip="User Management">
+                            <i class="fas fa-users"></i>
+                            <span class="nav-text">User Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="../post-gallery/index.html" class="nav-link" data-tooltip="Gallery">
+                            <i class="fas fa-images"></i>
+                            <span class="nav-text">Gallery Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="../post-reports/index.html" class="nav-link" data-tooltip="Reported Post">
+                            <i class="fas fa-file-alt"></i>
+                            <span class="nav-text">Report Management</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="admin-profile" id="adminProfile">
+                    <div class="admin-avatar">
+                        <img src="../images/default-avatar.png" alt="Admin" id="adminAvatar"
+                            onerror="this.src='../images/default-avatar.png'">
+                    </div>
+                    <div class="admin-info">
+                        <div class="admin-role">Admin</div>
+                        <div class="admin-name" id="adminName">Loading...</div>
+                    </div>
+                </div>
+                <div class="admin-dropdown" id="adminDropdown">
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                    <a href="login.html" class="dropdown-item logout" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="main-header">
+                <button class="mobile-toggle" id="mobileToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="header-title">
+                    <h1>User</h1>
+                    <h2>MANAGEMENT</h2>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <!-- Search and Action Bar -->
+                <div class="action-bar">
+                    <div class="search-container">
+                        <input type="text" id="searchInput" placeholder="Search" class="search-input">
+                        <button class="action-btn search-btn" id="searchBtn">Search</button>
+                        <button class="action-btn reset-btn" id="resetBtn">Reset</button>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-btn block-btn" id="blockBtn" disabled>Block</button>
+                        <button class="action-btn unblock-btn" id="unblockBtn" disabled>Unblock</button>
+                        <button class="action-btn delete-btn" id="deleteBtn" disabled>Delete</button>
+                        <button class="action-btn report-btn" id="reportBtn">Generate Report</button>
+                    </div>
+                </div>
+
+                <!-- Loading Spinner -->
+                <div class="loading-spinner" id="loadingSpinner">
+                    <div class="spinner"></div>
+                    <p>Loading user accounts...</p>
+                </div>
+
+                <!-- User Cards Grid -->
+                <div class="users-grid" id="usersGrid" style="display: none;">
+                    <!-- User cards will be dynamically inserted here -->
+                </div>
+
+                <!-- No Results Message -->
+                <div class="no-results" id="noResults" style="display: none;">
+                    <i class="fas fa-users"></i>
+                    <h3>No Users Found</h3>
+                    <p>No users match your search criteria.</p>
+                </div>
+
+                <!-- Error Message -->
+                <div class="error-message" id="errorMessage" style="display: none;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Error Loading Data</h3>
+                    <p>Unable to connect to Firebase. Please check your configuration.</p>
+                    <button class="retry-btn" id="retryBtn">Retry</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">Confirm Action</h3>
+                <button class="modal-close" id="modalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="modalMessage">Are you sure you want to perform this action?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="modalCancel">Cancel</button>
+                <button class="btn btn-primary" id="modalConfirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module" src="../js/firebase-config.js"></script>
+    <script type="module" src="../js/registered-accounts.js"></script>
+    <script type="module" src="../js/script.js"></script>
+</body>
+
+</html>

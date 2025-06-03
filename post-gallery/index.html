@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Bubblegum+Sans&family=Great+Vibes&family=Kavoon&family=Lavishly+Yours&family=Luckiest+Guy&family=Montez&family=Niconne&display=swap"
+        rel="stylesheet">
+    <title>Facetagram || Gallery Management</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Add this before your other scripts -->
+    <script type="module">
+        import { auth } from '../js/firebase-config.js';
+
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.replace('../login.html');
+            }
+        });
+
+        // Prevent back/forward navigation when logged out
+        window.addEventListener('popstate', () => {
+            if (!auth.currentUser) {
+                window.location.replace('../login.html');
+            }
+        });
+    </script>
+    <style>
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-text">Facetagram</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="../dashboard.html" class="nav-link" data-tooltip="Dashboard">
+                            <i class="fas fa-th-large"></i>
+                            <span class="nav-text">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="../user-management/index.html" class="nav-link" data-tooltip="User Management">
+                            <i class="fas fa-users"></i>
+                            <span class="nav-text">User Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item active">
+                        <a href="index.html" class="nav-link" data-tooltip="Gallery">
+                            <i class="fas fa-images"></i>
+                            <span class="nav-text">Gallery Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="../post-reports/index.html" class="nav-link" data-tooltip="Reported Post">
+                            <i class="fas fa-file-alt"></i>
+                            <span class="nav-text">Report Management</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="admin-profile" id="adminProfile">
+                    <div class="admin-avatar">
+                        <img src="../images/default-avatar.png" alt="Admin" id="adminAvatar"
+                            onerror="this.src='../images/default-avatar.png'">
+                    </div>
+                    <div class="admin-info">
+                        <div class="admin-role">Admin</div>
+                        <div class="admin-name" id="adminName">Loading...</div>
+                    </div>
+                </div>
+                <div class="admin-dropdown" id="adminDropdown">
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                    <a href="login.html" class="dropdown-item logout" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="main-header">
+                <button class="mobile-toggle" id="mobileToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="header-title">
+                    <h1>Gallery</h1>
+                    <h2>MANAGEMENT</h2>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <!-- Gallery Controls -->
+                <div class="gallery-controls">
+                    <div class="search-section">
+                        <div class="search-bar">
+                            <!-- <i class="fas fa-search"></i> -->
+                            <input type="text" id="searchInput" placeholder="Search media files...">
+                        </div>
+                        <button class="search-btn" id="searchBtn">
+                            <i class="fas fa-search"></i>
+                            Search
+                        </button>
+                    </div>
+
+                    <div class="filter-section">
+                        <div class="filter-group">
+                            <label for="fileTypeFilter">File Type:</label>
+                            <select id="fileTypeFilter">
+                                <option value="">All Types</option>
+                                <option value="image">Images</option>
+                                <option value="video">Videos</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="dateFilter">Upload Date:</label>
+                            <select id="dateFilter">
+                                <option value="">All Dates</option>
+                                <option value="today">Today</option>
+                                <option value="week">This Week</option>
+                                <option value="month">This Month</option>
+                                <option value="custom">Custom Range</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="userFilter">User:</label>
+                            <input type="text" id="userFilter" placeholder="Filter by username...">
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="statusFilter">Status:</label>
+                            <select id="statusFilter">
+                                <option value="">All Status</option>
+                                <option value="approved">Approved</option>
+                                <option value="flagged">Flagged</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="userFilter">Reset:</label>
+                            <button class="clear-filters-btn" id="clearFiltersBtn">
+                            <i class="fas fa-times"></i>
+                            Clear Filters
+                        </button>
+                        </div>
+
+                    </div>
+
+                    <div class="bulk-actions">
+                        <button class="bulk-btn" id="selectAllBtn">
+                            <i class="fas fa-check-square"></i>
+                            Select All
+                        </button>
+                        <button class="bulk-btn danger" id="bulkDeleteBtn" disabled>
+                            <i class="fas fa-trash"></i>
+                            Delete Selected
+                        </button>
+                        <button class="bulk-btn" id="bulkDownloadBtn" disabled>
+                            <i class="fas fa-download"></i>
+                            Download Selected
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Gallery Stats -->
+                <div class="gallery-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-images"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-number" id="totalFiles">0</div>
+                            <div class="stat-label">Total Files</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-photo-video"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-number" id="totalImages">0</div>
+                            <div class="stat-label">Images</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-number" id="totalVideos">0</div>
+                            <div class="stat-label">Videos</div>
+                        </div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-number" id="flaggedFiles">0</div>
+                            <div class="stat-label">Flagged Content</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gallery Grid -->
+                <div class="gallery-container">
+                    <div class="gallery-grid" id="galleryGrid">
+                        <!-- Media items will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Loading Spinner -->
+                <div class="loading-spinner" id="loadingSpinner">
+                    <div class="spinner"></div>
+                    <p>Loading gallery...</p>
+                </div>
+
+                <!-- Error Message -->
+                <div class="error-message" id="errorMessage" style="display: none;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Error Loading Gallery</h3>
+                    <p>Unable to connect to Firebase. Please check your configuration.</p>
+                    <button class="retry-btn" id="retryBtn">Retry</button>
+                </div>
+
+                <!-- Empty State -->
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <i class="fas fa-images"></i>
+                    <h3>No Media Files Found</h3>
+                    <p>No media files match your current filters.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Media Preview Modal -->
+    <div class="modal-overlay" id="previewModal">
+        <div class="modal-content preview-modal">
+            <div class="modal-header">
+                <h3>Media Preview</h3>
+                <button class="close-btn" id="closePreviewBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="preview-container" id="previewContainer">
+                    <!-- Media preview will be loaded here -->
+                </div>
+                <div class="media-details" id="mediaDetails">
+                    <!-- Media details will be loaded here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn secondary" id="downloadBtn">
+                    <i class="fas fa-download"></i>
+                    Download
+                </button>
+                <button class="btn warning" id="flagBtn">
+                    <i class="fas fa-flag"></i>
+                    Flag Content
+                </button>
+                <button class="btn danger" id="deleteBtn">
+                    <i class="fas fa-trash"></i>
+                    Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-content confirm-modal">
+            <div class="modal-header">
+                <h3 id="confirmTitle">Confirm Action</h3>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage">Are you sure you want to perform this action?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn secondary" id="cancelBtn">Cancel</button>
+                <button class="btn danger" id="confirmBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Date Range Modal -->
+    <div class="modal-overlay" id="dateRangeModal">
+        <div class="modal-content date-modal">
+            <div class="modal-header">
+                <h3>Select Date Range</h3>
+                <button class="close-btn" id="closeDateBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="date-inputs">
+                    <div class="input-group">
+                        <label for="startDate">Start Date:</label>
+                        <input type="date" id="startDate">
+                    </div>
+                    <div class="input-group">
+                        <label for="endDate">End Date:</label>
+                        <input type="date" id="endDate">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn secondary" id="cancelDateBtn">Cancel</button>
+                <button class="btn primary" id="applyDateBtn">Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+
+    <script type="module" src="../js/firebase-config.js"></script>
+    <script type="module" src="../js/gallery-management.js"></script>
+</body>
+
+</html>
